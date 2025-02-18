@@ -1,0 +1,49 @@
+# macOS system files
+.DS_Store
+
+# Xcode-specific files
+*.xcworkspace
+*.xcuserstate
+*.xcuserdata/
+DerivedData/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods (if you're using it)
+Pods/
+Podfile.lock
+
+# Carthage (if you're using it)
+Carthage/Checkouts
+Carthage/Build
+
+# Fastlane (if using it)
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+
+# Archives
+*.xcarchive
+
+# Logs & caches
+*.log
+*.swp
+*.lock
+*.pyc
+
+# Env files
+.env
+*.keychain
+
+# Ignore Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Ignore user-specific settings
+*.swiftpm
