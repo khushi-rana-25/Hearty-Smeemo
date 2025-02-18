@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct MainScreen: View {
+    @State private var showModal = false
+    
     var body: some View {
         VStack {
 
@@ -54,15 +56,23 @@ struct MainScreen: View {
             HStack {
                 TabButton(icon: "doc.text", label: "Letters Repo")
                 Spacer()
-                TabButton(icon: "plus.circle.fill", label: "New Letter")
-                    .font(.system(size: 30))
+                TabButton(icon: "plus.circle.fill", label: "")
+                    .font(.system(size: 60))
+                    .onTapGesture {
+                        showModal = true
+                    }
                 Spacer()
-                TabButton(icon: "lock.fill", label: "Locked Letters")
+                TabButton(icon: "lock", label: "Locked Letters")
             }
             .padding(.top, 5)
             .background(Color.white)
         }
         .padding()
+        .sheet(isPresented: $showModal) {
+                    NewLetterModal()
+                .presentationDetents([.height(200)]) // Set custom height for the modal
+                .presentationDragIndicator(.visible)
+                }
     }
 }
 
@@ -98,13 +108,14 @@ struct LetterSection: View {
 // MARK: - Letter Card
 struct LetterCard: View {
     var letter: Letter
+    @State private var isPopupVisible = false
 
     var body: some View {
         HStack {
             RoundedRectangle(cornerRadius: 10)
                 .fill(Color(hex: "FF95CA"))
                 .frame(width: 50, height: 50)
-
+            
             VStack(alignment: .leading) {
                 Text("Sent to: \(letter.recipient)")
                     .font(.subheadline).bold()
@@ -113,9 +124,26 @@ struct LetterCard: View {
                     .foregroundColor(.gray)
             }
             Spacer()
-
-            Image(systemName: "ellipsis")
-                .foregroundColor(.black)
+            Menu {
+                Button(action: {
+                    
+                }) {
+                    Label("Lock", systemImage: "lock")
+                }
+                Button(action: {
+                
+                }) {
+                    Label("Edit", systemImage: "pencil")
+                }
+                Button(action: {
+                    
+                }) {
+                    Label("Share", systemImage: "square.and.arrow.up")
+                }
+            } label: {
+                Image(systemName: "ellipsis")
+                    .foregroundColor(.black)
+            }
         }
         .padding()
         .background(Color.white)
@@ -165,5 +193,49 @@ extension Color {
         } else {
             self.init(.clear)
         }
+    }
+}
+
+// MARK: - PLUS ICON MODAL VIEW
+struct NewLetterModal: View {
+    var body: some View {
+        Spacer(minLength: 70)
+        VStack(spacing: 20) {
+            // Option 1: Generate your letter
+            Button(action: {
+               
+            }) {
+                HStack {
+                    Image(systemName: "text.badge.plus")
+                        .font(.title)
+                    Text("Generate your letter")
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity, minHeight: 60)
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .cornerRadius(16)
+            }
+
+            // Option 2: Design your letter
+            Button(action: {
+                
+            }) {
+                HStack {
+                    Image(systemName: "paintbrush.fill")
+                        .font(.title)
+                    Text("Design your letter")
+                        .font(.headline)
+                }
+                .frame(maxWidth: .infinity, minHeight: 60)
+                .background(Color.green)
+                .foregroundColor(.white)
+                .cornerRadius(16)
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, 20)
+        .padding(.bottom, 40)
     }
 }
