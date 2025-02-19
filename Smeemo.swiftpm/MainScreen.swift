@@ -73,6 +73,9 @@ struct MainScreen: View {
                 .presentationDetents([.height(200)]) // Set custom height for the modal
                 .presentationDragIndicator(.visible)
                 }
+        
+        
+       
     }
 }
 
@@ -197,13 +200,18 @@ extension Color {
 }
 
 // MARK: - PLUS ICON MODAL VIEW
+import SwiftUI
+
 struct NewLetterModal: View {
+    @State private var showGenerateLetter = false
+    @State private var showDesignLetter = false
+
     var body: some View {
-        Spacer(minLength: 70)
         VStack(spacing: 20) {
-            // Option 1: Generate your letter
+            Spacer(minLength: 50)
+            
             Button(action: {
-               
+                showGenerateLetter = true
             }) {
                 HStack {
                     Image(systemName: "text.badge.plus")
@@ -216,10 +224,12 @@ struct NewLetterModal: View {
                 .foregroundColor(.white)
                 .cornerRadius(16)
             }
+            .fullScreenCover(isPresented: $showGenerateLetter) {
+                GenerateLetter()
+            }
 
-            // Option 2: Design your letter
             Button(action: {
-                
+                showDesignLetter = true
             }) {
                 HStack {
                     Image(systemName: "paintbrush.fill")
@@ -228,14 +238,17 @@ struct NewLetterModal: View {
                         .font(.headline)
                 }
                 .frame(maxWidth: .infinity, minHeight: 60)
-                .background(Color.green)
+                .background(Color.blue)
                 .foregroundColor(.white)
                 .cornerRadius(16)
+            }
+            .fullScreenCover(isPresented: $showDesignLetter) {
+                DesignLetter()
             }
 
             Spacer()
         }
         .padding(.horizontal, 20)
-        .padding(.bottom, 40)
+        .padding(.bottom, 10)
     }
 }
