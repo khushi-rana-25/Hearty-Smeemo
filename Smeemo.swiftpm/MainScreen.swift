@@ -14,22 +14,14 @@ struct MainScreen: View {
         VStack {
 
             Spacer(minLength: 30)
-            HStack {
-                Text("Smeemo")
-                    .font(.largeTitle).bold()
-                Spacer()
-                Image(systemName: "person.circle.fill")
-                    .resizable()
-                    .frame(width: 35, height: 35)
-                    .foregroundColor(.black)
-            }
-            .padding(.horizontal, 10)
+            Text("Smeemo").font(.largeTitle).bold()
+             .padding(.leading, -170)
 
             Text("Your World! 🌍")
                 .font(.title2)
                 .foregroundColor(.black)
                 .padding(.top, 10)
-                .padding(.leading, 1)
+                .padding(.leading, -160)
                 .padding(.bottom, 30)
 
             ScrollView {

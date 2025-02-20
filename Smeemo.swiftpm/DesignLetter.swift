@@ -87,50 +87,54 @@ struct DesignLetter: View {
 
             // MARK: - Toolbar Section
             HStack {
-                Button(action: { showFontOptions.toggle() }) {
-                    Text("Aa")
-                        .font(.title2)
-                        .foregroundColor(.black)
-                        .padding(.leading, 50)
-                }
-                .popover(isPresented: $showFontOptions, attachmentAnchor: .point(.bottomLeading), arrowEdge: .bottom, content: {
-                    VStack {
-                        HStack(spacing: 15) {
-                            Button(action: { isBold.toggle() }) {
-                                Image(systemName: "bold")
-                                    .foregroundColor(isBold ? .blue : .black)
-                            }
-                            Button(action: { isItalic.toggle() }) {
-                                Image(systemName: "italic")
-                                    .foregroundColor(isItalic ? .blue : .black)
-                            }
-                            Button(action: { isUnderline.toggle() }) {
-                                Image(systemName: "underline")
-                                    .foregroundColor(isUnderline ? .blue : .black)
-                            }
-                        }
-                        .padding()
-                        
-                        Divider()
-                        
-                        // Font Picker
-                        Picker("Font", selection: $selectedFont) {
-                            Text("SF Pro").tag("SF Pro")
-                            Text("Arial").tag("Arial")
-                            Text("Times New Roman").tag("Times New Roman")
-                        }
-                        .padding()
-                        
-                        Stepper("Size: \(Int(fontSize)) pt", value: $fontSize, in: 10...50, step: 1)
-                            .padding()
-                        
-                        ColorPicker("Text Color", selection: $textColor)
-                            .padding()
-                        ColorPicker("Fill Color", selection: $fillColor)
-                            .padding()
+                if #available(iOS 16.4, *) {
+                    Button(action: { showFontOptions.toggle() }) {
+                        Text("Aa")
+                            .font(.title2)
+                            .foregroundColor(.black)
+                            .padding(.leading, 50)
                     }
-                }).padding()
-    
+                    .popover(isPresented: $showFontOptions, attachmentAnchor: .point(.center), arrowEdge: .top, content: {
+                        VStack {
+                            HStack(spacing: 15) {
+                                Button(action: { isBold.toggle() }) {
+                                    Image(systemName: "bold")
+                                        .foregroundColor(isBold ? .blue : .black)
+                                }
+                                Button(action: { isItalic.toggle() }) {
+                                    Image(systemName: "italic")
+                                        .foregroundColor(isItalic ? .blue : .black)
+                                }
+                                Button(action: { isUnderline.toggle() }) {
+                                    Image(systemName: "underline")
+                                        .foregroundColor(isUnderline ? .blue : .black)
+                                }
+                            }
+                            .padding()
+                            
+                            Divider()
+                            
+                            // Font Picker
+                            
+                            Picker("Font", selection: $selectedFont) {
+                                        ForEach(selectionOptions, id: \.self) { font in
+                                            Text(font)
+                                        }
+                                    }
+                                    .pickerStyle(.menu)
+                                    .padding()
+                            
+                            Stepper("Size: \(Int(fontSize)) pt", value: $fontSize, in: 10...50, step: 1)
+                                .padding()
+                            
+                            ColorPicker("Text Color", selection: $textColor)
+                                .padding()
+                            ColorPicker("Fill Color", selection: $fillColor)
+                                .padding()
+                        }
+                    }).padding()
+                        
+                }
                 Button(action: { showTemplates=true }) {
                     HStack {
                         Image(systemName: "doc.on.doc")
@@ -162,3 +166,13 @@ struct DesignLetter: View {
 func exportAsPDF() { print("Exporting as PDF...") }
 func exportAsPNG() { print("Exporting as PNG...") }
 func exportAsCard() { print("Exporting as Card...") }
+
+let selectionOptions: [String] = [
+    "SF Pro",
+    "Arial",
+    "Times New Roman"
+    ]
+
+#Preview{
+    DesignLetter()
+}
