@@ -9,7 +9,7 @@ import UIKit
 import PDFKit
 
 struct PDFExporter {
-    static func export(letter: Letter) {
+    static func export(letter: Letter) -> URL {
         let pdfMetaData = [
             kCGPDFContextCreator: "Smeemo",
             kCGPDFContextAuthor: "User"
@@ -45,8 +45,15 @@ struct PDFExporter {
             try pdfData.write(to: pdfFilename)
             print("Saved PDF to: \(pdfFilename)")
             
+            if FileManager.default.fileExists(atPath: pdfFilename.path) {
+                return pdfFilename
+            }else{
+                print("❌ Error: PDF file not found after saving!")
+                return pdfFilename
+            }
         } catch {
             print("Error saving PDF: \(error.localizedDescription)")
+            return pdfFilename
         }
     }
 }

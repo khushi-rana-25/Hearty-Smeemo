@@ -38,6 +38,7 @@ struct LetterCardView: View {
     @Binding var letter: Letter
     @Binding var letters: [Letter]
     @State private var showExportOptions = false
+    @State private var previewURL: IdentifiableURL?
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -59,46 +60,51 @@ struct LetterCardView: View {
                         .foregroundColor(letter.isLocked ? .red : .gray)
                 }
                 .buttonStyle(BorderlessButtonStyle())
-                
-                Button(action: { showExportOptions = true }) {
-                                    Image(systemName: "square.and.arrow.up")
-                                        .foregroundColor(.blue)
-                                }
-                                .buttonStyle(BorderlessButtonStyle())
 
+                Button(action: { showExportOptions = true }) {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(BorderlessButtonStyle())
             }
         }
         .padding()
         .background(RoundedRectangle(cornerRadius: 10).fill(Color.white).shadow(radius: 2))
         .actionSheet(isPresented: $showExportOptions) {
-                    ActionSheet(
-                        title: Text("Export Letter"),
-                        buttons: [
-                            .default(Text("Save as PDF")) { exportAsPDF() },
-                            .default(Text("Save as PNG")) { exportAsPNG() },
-                            .default(Text("Save as Card")) { exportAsCard() },
-                            .cancel()
-                        ]
-                    )
-                }
-
+            ActionSheet(
+                title: Text("Export Letter"),
+                buttons: [
+                    .default(Text("Save as PDF")) { exportAsPDF() },
+                    .default(Text("Save as PNG")) { exportAsPNG() },
+                    .cancel()
+                ]
+            )
+        }
+        .sheet(item: $previewURL) { wrapper in
+            DocumentPreviewController(url: wrapper.url)
+        }
     }
 
     private func toggleLock() {
         if let index = letters.firstIndex(where: { $0.id == letter.id }) {
             letters[index].isLocked.toggle()
-            FileManagerHelper.saveLetters(letters) // ✅ Save updated lock status
+            FileManagerHelper.saveLetters(letters)
         }
     }
-    
+
     private func exportAsPDF() {
-            PDFExporter.export(letter: letter)
+            let url = PDFExporter.export(letter: letter)
+            previewURL = IdentifiableURL(url: url) // ✅ Now triggers proper preview!
         }
 
-        private func exportAsPNG() {
-            ImageExporter.export(letter: letter)
+    private func exportAsPNG() {
+            if let url = ImageExporter.export(letter: letter) {
+                previewURL = IdentifiableURL(url: url) // ✅ Preview PNG
+            } else {
+                print("❌ Error exporting PNG")
+            }
         }
-
+    
         private func exportAsCard() {
             CardExporter.export(letter: letter)
         }
