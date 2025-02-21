@@ -48,8 +48,7 @@ struct NewLetterView: View {
                 Spacer()
                 
                 Button(action: saveLetter) {
-                    Text("Save Letter")
-                        .font(.headline)
+                    Text("Save Letter").font(.headline)
                         .foregroundColor(.white)
                         .padding()
                         .frame(maxWidth: .infinity)
