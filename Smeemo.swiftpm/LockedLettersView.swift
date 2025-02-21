@@ -20,6 +20,14 @@ struct LockedLettersView: View {
                 List {
                     ForEach(letters.filter { $0.isLocked }) { letter in
                         LetterCardView(letter: .constant(letter), letters: $letters)
+                            .listRowBackground(
+                                RoundedRectangle(cornerRadius: 16) // Apply corner radius to the row background
+                                    .fill(Color.white)
+                                    .shadow(radius: 2) // Optional: Add shadow for depth
+                                    .padding(.vertical, 8) // Add some spacing between rows
+                            )
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(EdgeInsets(top: 20, leading: 10, bottom: 20, trailing: 10))
                     }
                 }
                 .navigationTitle("Locked Letters")
