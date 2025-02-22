@@ -1,470 +1,115 @@
-//
-//import SwiftUI
-//
-//struct NewLetterView: View {
-//    @State private var title: String = ""
-//    @State private var recipient: String = ""
-//    @State private var content: String = ""
-//    @State private var selectedCategory: String = "Birthday Note"
-//
-//    // List of categories
-//    let categories = ["Birthday Note", "Thank You", "Love Letter"]
-//
-//    // Environment property to dismiss view
-//    @Environment(\.presentationMode) var presentationMode
-//    
-//    // Reference to shared letters (to update HomeView)
-//    @Binding var letters: [Letter]
-//
-//    var body: some View {
-//        NavigationView {
-//            VStack {
-//                TextField("Title", text: $title)
-//                    .textFieldStyle(RoundedBorderTextFieldStyle())
-//                    .padding()
-//
-//                TextField("Recipient", text: $recipient)
-//                    .textFieldStyle(RoundedBorderTextFieldStyle())
-//                    .padding()
-//
-//                Picker("Category", selection: $selectedCategory) {
-//                    ForEach(categories, id: \.self) { category in
-//                        Text(category)
-//                    }
-//                }
-//                .pickerStyle(SegmentedPickerStyle())
-//                .padding()
-//
-//                TextEditor(text: $content)
-//                    .frame(height: 200)
-//                    .padding()
-//                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
-//                
-//                Spacer()
-//                
-//                Button(action: saveLetter) {
-//                    Text("Save Letter").font(.headline)
-//                        .foregroundColor(.white)
-//                        .padding()
-//                        .frame(maxWidth: .infinity)
-//                        .background(Color.blue)
-//                        .cornerRadius(10)
-//                        .padding()
-//                }
-//            }
-//            .navigationTitle("New Letter")
-//        }
-//    }
-//
-//    // Save Letter Function
-//    private func saveLetter() {
-//        let newLetter = Letter(title: title, recipient: recipient, date: getCurrentDate(), category: selectedCategory)
-//        letters.append(newLetter) // Add new letter to the list
-//        FileManagerHelper.saveLetters(letters)
-//        presentationMode.wrappedValue.dismiss() // Navigate back
-//    }
-//
-//    // Get Current Date
-//    private func getCurrentDate() -> String {
-//        let formatter = DateFormatter()
-//        formatter.dateStyle = .medium
-//        return formatter.string(from: Date())
-//    }
-//}
-//
-//#Preview {
-//    NewLetterView(letters: .constant([]))
-//}
-
-//import SwiftUI
-//
-//struct NewLetterView: View {
-//    @State private var title: String = ""
-//    @State private var recipient: String = ""
-//    @State private var content: String = ""
-//
-//    @State private var selectedCategory: String = ""
-//    @State private var isCreatingNewCategory = false
-//    @State private var categories: [String] = UserDefaults.standard.stringArray(forKey: "categories") ?? []
-//    
-//    @State private var showFormattingMenu = false
-//    @State private var showTemplatePicker = false
-//    @State private var showAddOptions = false
-//    
-//    @Environment(\.presentationMode) var presentationMode
-//    @Binding var letters: [Letter]
-//
-//    var body: some View {
-//        NavigationView {
-//            VStack(spacing: 20) {
-//                floatingInputField(title: "Title", text: $title)
-//                floatingInputField(title: "Recipient", text: $recipient)
-//                categorySelector()
-//
-//                toolbar() // Formatting & Insert Options
-//                
-//                AutoExpandingTextEditor(text: $content)
-//                                        .padding(.horizontal)
-//
-//                Spacer()
-//
-//                Button(action: saveLetter) {
-//                    Text("Save Letter")
-//                        .font(.headline)
-//                        .foregroundColor(.white)
-//                        .padding()
-//                        .frame(maxWidth: .infinity)
-//                        .background(LinearGradient(gradient: Gradient(colors: [Color.blue, Color.purple]), startPoint: .leading, endPoint: .trailing))
-//                        .cornerRadius(12)
-//                        .shadow(radius: 3)
-//                }
-//                .padding()
-//            }
-//            
-//            .padding()
-//            .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
-//        }
-//    }
-//
-//    // MARK: - Toolbar for Formatting & Insert Options
-//    @ViewBuilder
-//    private func toolbar() -> some View {
-//        HStack {
-//            Button(action: { showFormattingMenu.toggle() }) {
-//                Image(systemName: "textformat.size")
-//                    .font(.title2)
-//                    .foregroundColor(.blue)
-//            }
-//            .sheet(isPresented: $showFormattingMenu) {
-//                FormattingMenu()
-//            }
-//            .padding(.trailing, 50)
-//            
-////            Spacer(minLength: 10)
-//            
-//            Button(action: { showTemplatePicker.toggle() }) {
-//                Image(systemName: "doc.text.image")
-//                    .font(.title2)
-//                    .foregroundColor(.purple)
-//            }
-//            .sheet(isPresented: $showTemplatePicker) {
-//                TemplatePicker()
-//            }
-//            .padding(.trailing, 50)
-//
-////            Spacer()
-//
-//            Button(action: { showAddOptions.toggle() }) {
-//                Image(systemName: "plus.circle.fill")
-//                    .font(.title2)
-//                    .foregroundColor(.green)
-//            }
-//            .actionSheet(isPresented: $showAddOptions) {
-//                ActionSheet(title: Text("Insert"), buttons: [
-//                    .default(Text("Image")) { /* Handle Image Upload */ },
-//                    .default(Text("Audio File")) { /* Handle Audio Upload */ },
-//                    .default(Text("Camera")) { /* Handle Camera Capture */ },
-//                    .default(Text("Voice Recording")) { /* Handle Voice Recording */ },
-//                    .default(Text("Emojis")) { /* Handle Emojis */ },
-//                    .default(Text("Stickers")) { /* Handle Stickers */ },
-//                    .cancel()
-//                ])
-//            }
-//        }
-//        .padding(.horizontal)
-//    }
-//
-//    // Floating Label Input Field
-//    @ViewBuilder
-//    private func floatingInputField(title: String, text: Binding<String>) -> some View {
-//        VStack(alignment: .leading) {
-//            Text(title)
-//                .font(.caption)
-//                .foregroundColor(.gray)
-//                .offset(y: text.wrappedValue.isEmpty ? 25 : 0)
-//                .scaleEffect(text.wrappedValue.isEmpty ? 1.2 : 1, anchor: .leading)
-//                .animation(.easeInOut(duration: 0.2), value: text.wrappedValue)
-//
-//            TextField("", text: text)
-//                .padding(.vertical, 10)
-//                .foregroundColor(.primary)
-//                .background(Color.clear)
-//                .overlay(
-//                    Rectangle()
-//                        .frame(height: 1)
-//                        .foregroundColor(.gray)
-//                        .opacity(0.7),
-//                    alignment: .bottom
-//                )
-//        }
-//        .padding(.horizontal)
-//    }
-//
-//    // Category Selector with Stored Categories & "New Category" Option
-//    @ViewBuilder
-//    private func categorySelector() -> some View {
-//        VStack(alignment: .leading) {
-//            Text("Category")
-//                .font(.caption)
-//                .foregroundColor(.gray)
-//
-//            if isCreatingNewCategory {
-//                floatingInputField(title: "New Category", text: $selectedCategory)
-//            } else {
-//                Menu {
-//                    ForEach(categories, id: \.self) { category in
-//                        Button(category) {
-//                            selectedCategory = category
-//                            isCreatingNewCategory = false
-//                        }
-//                    }
-//                    Divider()
-//                    Button("New Category") {
-//                        isCreatingNewCategory = true
-//                        selectedCategory = ""
-//                    }
-//                } label: {
-//                    HStack {
-//                        Text(selectedCategory.isEmpty ? "Select a Category" : selectedCategory)
-//                            .foregroundColor(selectedCategory.isEmpty ? .gray : .primary)
-//                        Spacer()
-//                        Image(systemName: "chevron.down")
-//                            .foregroundColor(.gray)
-//                    }
-//                    .padding()
-//                    .background(Color.white.opacity(0.1).cornerRadius(10))
-//                }
-//            }
-//        }
-//        .padding(.horizontal)
-//    }
-//
-//    // Save Letter Function
-//    private func saveLetter() {
-//        let trimmedCategory = selectedCategory.trimmingCharacters(in: .whitespacesAndNewlines)
-//
-//        if !categories.contains(where: { $0.lowercased() == trimmedCategory.lowercased() }) {
-//            categories.append(trimmedCategory)
-//            UserDefaults.standard.set(categories, forKey: "categories")
-//        }
-//
-//        let newLetter = Letter(title: title, recipient: recipient, date: getCurrentDate(), category: trimmedCategory)
-//        letters.append(newLetter)
-//        FileManagerHelper.saveLetters(letters)
-//        presentationMode.wrappedValue.dismiss()
-//    }
-//
-//    // Get Current Date
-//    private func getCurrentDate() -> String {
-//        let formatter = DateFormatter()
-//        formatter.dateFormat = "MMM dd, yyyy"
-//        return formatter.string(from: Date())
-//    }
-//}
-//
-//// MARK: - Formatting Menu
-//struct FormattingMenu: View {
-//    @State private var selectedFont = "System"
-//    @State private var fontSize: Double = 16
-//    @State private var textColor: Color = .black
-//    @State private var bgColor: Color = .white
-//    
-//    let allFonts = UIFont.familyNames.sorted()
-//
-//    var body: some View {
-//        VStack(spacing: 20) {
-//            Text("Text Formatting")
-//                .font(.headline)
-//            
-//            VStack(alignment: .leading) {
-//                                Text("Font Face")
-//                                    .font(.caption)
-//                                    .foregroundColor(.gray)
-//                                
-//                                Menu {
-//                                    ForEach(allFonts, id: \.self) { font in
-//                                        Button(font) {
-//                                            selectedFont = font
-//                                        }
-//                                    }
-//                                } label: {
-//                                    HStack {
-//                                        Text(selectedFont)
-//                                            .foregroundColor(.primary)
-//                                        Spacer()
-//                                        Image(systemName: "chevron.down")
-//                                            .foregroundColor(.gray)
-//                                    }
-//                                    .padding()
-//                                    .background(Color.white.opacity(0.1).cornerRadius(10))
-//                                }
-//                            }
-//                            .padding(.horizontal)
-//
-//
-//            HStack {
-//                Text("Font Size")
-//                Slider(value: $fontSize, in: 12...36, step: 1)
-//                Text("\(Int(fontSize))")
-//            }
-//            .padding()
-//
-//            HStack {
-//                Text("Text Color")
-//                ColorPicker("", selection: $textColor)
-//            }
-//            .padding()
-//
-//            HStack {
-//                Text("Background Color")
-//                ColorPicker("", selection: $bgColor)
-//            }
-//            .padding()
-//
-//            Button("Apply") {
-//                // Apply formatting changes
-//            }
-//            .padding()
-//            .frame(maxWidth: .infinity)
-//            .background(Color.blue)
-//            .foregroundColor(.white)
-//            .cornerRadius(10)
-//
-//            Spacer()
-//        }
-//        .padding()
-//    }
-//}
-//
-//// MARK: - Template Picker
-//struct TemplatePicker: View {
-//    var body: some View {
-//        VStack(spacing: 20) {
-//            Text("Select a Template")
-//                .font(.headline)
-//
-//            List {
-//                Text("Formal Letter")
-//                Text("Casual Letter")
-//                Text("Apology Letter")
-//                Text("Thank You Letter")
-//                Text("Business Proposal")
-//            }
-//
-//            Button("Close") {
-//                // Close template picker
-//            }
-//            .padding()
-//            .frame(maxWidth: .infinity)
-//            .background(Color.red)
-//            .foregroundColor(.white)
-//            .cornerRadius(10)
-//
-//            Spacer()
-//        }
-//        .padding()
-//    }
-//}
-//
-//
-//struct AutoExpandingTextEditor: View {
-//    @Binding var text: String
-//    @State private var textHeight: CGFloat = 120 // Minimum height for letter-writing space
-//
-//    var body: some View {
-//        ZStack(alignment: .topLeading) {
-//            // Placeholder
-//            if text.isEmpty {
-//                Text("Write your letter here...")
-//                    .foregroundColor(.gray)
-//                    .padding(.leading, 15)
-//                    .padding(.top, 12)
-//            }
-//
-//            TextEditor(text: $text)
-//                .frame(minHeight: textHeight, maxHeight: .infinity) // Auto-expand height
-//                .padding()
-//                .background(
-//                    RoundedRectangle(cornerRadius: 15)
-//                        .fill(Color.white.opacity(0.95)) // Soft background
-//                        .shadow(color: Color.gray.opacity(0.2), radius: 5) // Soft shadow
-//                )
-//                .foregroundColor(.primary)
-//                .font(.system(size: 18))
-//                .onChange(of: text) { _ in
-//                    adjustHeight()
-//                }
-//        }
-//        .frame(maxWidth: UIScreen.main.bounds.width) // Full width with margin
-//    }
-//
-//    private func adjustHeight() {
-//        let minHeight: CGFloat = 120
-//        let maxHeight: CGFloat = UIScreen.main.bounds.height * 0.6 // Max 60% of screen height
-//        let estimatedHeight = CGFloat(text.split(separator: "\n").count) * 22 + 60 // Approximate line height
-//        textHeight = max(minHeight, min(estimatedHeight, maxHeight))
-//    }
-//}
-//
-//#Preview{
-//    NewLetterView(letters: .constant([]))
-//}
 
 import SwiftUI
+
+class RichTextViewModel: ObservableObject {
+    @Published var content: NSMutableAttributedString = NSMutableAttributedString(string: "") {
+        didSet {
+            // Add any additional processing if needed
+            objectWillChange.send()
+        }
+    }
+}
+
 
 struct NewLetterView: View {
     @State private var title: String = ""
     @State private var recipient: String = ""
-    @State private var content: String = ""
-    
     @State private var selectedCategory: String = ""
     @State private var isCreatingNewCategory = false
-    @State private var categories: [String] = UserDefaults.standard.stringArray(forKey: "categories") ?? []
-    
-    @State private var showFormattingMenu = false
-    @State private var showTemplatePicker = false
-    @State private var showAddOptions = false
+    @State private var categories: [String] = []
     @State private var isNewLetter: Bool
     
+    // 🔹 Formatting States
+    @State private var content: NSAttributedString = NSAttributedString(string:  " ")
+    @State private var selectedFont: String = "Helvetica"
+    @State private var fontSize: Double = 16
+    @State private var textColor: Color = .black
+    @State private var bgColor: Color = .white
+    @State private var isBold: Bool = false
+    @State private var isItalic: Bool = false
+    @State private var isUnderlined: Bool = false
+    @State private var showFontPicker = false
+    @State private var showColorPicker = false
+    @State private var showTemplatePicker = false
+    @State private var showAddOptions = false
+    @State private var showFormattingMenu = false
+    @State private var showEmojiPicker = false
+
+    @StateObject private var viewModel = RichTextViewModel()
+
+
     @Environment(\.presentationMode) var presentationMode
-    @Environment(\.dismiss) var dismiss
     @Binding var letters: [Letter]
-    
+
     init(letters: Binding<[Letter]>, isNewLetter: Bool = true) {
         self._letters = letters
         self._categories = State(initialValue: CategoryManager.loadCategories())
-        self._isNewLetter = State(initialValue: isNewLetter) // ✅ Start fresh or edit existing
+        self._isNewLetter = State(initialValue: isNewLetter)
     }
-    
-    
+
     var body: some View {
         NavigationView {
             VStack {
-                // 🔹 HEADER: Title, Recipient & Category
-                VStack(spacing: 15) {
+                VStack(spacing: 5){
                     floatingInputField(title: "Title", text: $title)
                     floatingInputField(title: "Recipient", text: $recipient)
                     categorySelector()
                 }
                 .padding(.horizontal)
                 
-                // 🔹 FULL-SCREEN LETTER AREA (NO EXTRA WHITE BG)
-                ZStack(alignment: .bottom) {
-                    AutoExpandingTextEditor(text: $content)
+                // 🔹 Rich Text Editor for Letter
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.white)
+                        .shadow(radius: 3)
                         .padding(.horizontal)
-                        .onChange(of: content) { _ in autoSaveLetter() }
+
+                    RichTextEditor(
+                        text: Binding(
+                            get: { viewModel.content },
+                            set: { newValue in viewModel.content = NSMutableAttributedString(attributedString: newValue) }
+                        ),
+                        selectedFont: $selectedFont,
+                        fontSize: Binding<CGFloat>(
+                            get: { CGFloat(fontSize) },
+                            set: { fontSize = Double($0) }
+                        ),
+                        textColor: Binding<UIColor>(
+                            get: { UIColor(textColor) },
+                            set: { textColor = Color($0) }
+                        ),
+                        bgColor: Binding<UIColor>(
+                            get: { UIColor(bgColor) },
+                            set: { bgColor = Color($0) }
+                        ),
+                        isBold: $isBold,
+                        isItalic: $isItalic,
+                        isUnderlined: $isUnderlined
+                    )
+                    .onChange(of: content) { _ in
+                        print("Updated text: \(content.string)")
+                    }
+                    .padding(12)
+                }
+                .frame(minHeight: 300, maxHeight: .infinity)
+                .frame(maxWidth: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .padding(.horizontal)
+                
+
+                HStack(spacing: 40) {
+                    Button(action: { showFormattingMenu.toggle() }) {
+                        Image(systemName: "textformat.size")
+                            .font(.title2)
+                            .foregroundColor(.blue)
+                    }
+                    .popover(isPresented: $showFormattingMenu) {
+                        FormattingMenu(isBold: $isBold, isItalic: $isItalic, isUnderlined: $isUnderlined, selectedFont: $selectedFont, fontSize: $fontSize, textColor: $textColor, bgColor: $bgColor)
+                            .frame(width: 300, height: 350)
+                    }
                     
-                    // 🔹 FLOATING TOOLBAR (Aa, Template, +)
-                    HStack(spacing: 40) {
-                        Button(action: { showFormattingMenu.toggle() }) {
-                            Image(systemName: "textformat.size")
-                                .font(.title2)
-                                .foregroundColor(.blue)
-                        }
-                        .sheet(isPresented: $showFormattingMenu) {
-                            FormattingMenu()
-                        }
-                        
+                    // 🔹 Additional Toolbar for Templates & Attachments
+                    HStack {
                         Button(action: { showTemplatePicker.toggle() }) {
                             Image(systemName: "doc.text.image")
                                 .font(.title2)
@@ -474,26 +119,33 @@ struct NewLetterView: View {
                             TemplatePicker()
                         }
                         
+//
                         Button(action: { showAddOptions.toggle() }) {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title2)
                                 .foregroundColor(.green)
                         }
-                        .actionSheet(isPresented: $showAddOptions) {
-                            ActionSheet(title: Text("Insert"), buttons: [
-                                .default(Text("Image")) { /* Handle Image Upload */ },
-                                .default(Text("Audio File")) { /* Handle Audio Upload */ },
-                                .default(Text("Camera")) { /* Handle Camera Capture */ },
-                                .default(Text("Voice Recording")) { /* Handle Voice Recording */ },
-                                .default(Text("Emojis")) { /* Handle Emojis */ },
-                                .default(Text("Stickers")) { /* Handle Stickers */ },
-                                .cancel()
-                            ])
+                        .confirmationDialog("Insert", isPresented: $showAddOptions, titleVisibility: .visible) {
+                            Button("Image") { /* Handle Image Upload */ }
+                            Button("Audio File") { /* Handle Audio Upload */ }
+                            Button("Camera") { /* Handle Camera Capture */ }
+                            Button("Voice Recording") { /* Handle Voice Recording */ }
+                            Button("Emojis") { showEmojiPicker = true }
+                            Button("Stickers") { /* Handle Stickers */ }
+                            Button("Cancel", role: .cancel) { }
                         }
+                        .sheet(isPresented: $showEmojiPicker) {
+                            EmojiPickerView { emoji in
+                                insertEmoji(emoji)
+                                showEmojiPicker = false
+                            }
+                        }
+
+
                     }
                     .padding()
-                    .background(BlurView(style: .systemMaterial)) // 🔹 Blurred Background for Floating Toolbar
-                    .cornerRadius(12)
+                    .background(BlurView(style: .systemMaterial))
+                    .cornerRadius(16)
                     .shadow(radius: 5)
                 }
                 .frame(maxHeight: .infinity)
@@ -501,13 +153,13 @@ struct NewLetterView: View {
             .navigationTitle("New Letter")
             .navigationBarItems(trailing: Button("Save") {
                 saveLetter()
-                dismiss() // ✅ Navigate back to Home Page
+                presentationMode.wrappedValue.dismiss()
             })
             .navigationBarTitleDisplayMode(.inline)
             .background(Color(UIColor.systemGroupedBackground).edgesIgnoringSafeArea(.all))
             .onAppear {
                 if isNewLetter {
-                    resetLetter() // ✅ If creating a new letter, start fresh
+                    resetLetter()
                 }
                 else{
                     loadLastSavedLetter()
@@ -516,52 +168,58 @@ struct NewLetterView: View {
         }
     }
     
-    private func autoSaveLetter() {
-        let letter = Letter(title: title, recipient: recipient, date: getCurrentDate(), category: selectedCategory, content: content)
-        FileManagerHelper.saveLetters([letter]) // ✅ Save every time something changes!
+    private func insertEmoji(_ emoji: String) {
+        let mutableAttrString = NSMutableAttributedString(attributedString: viewModel.content)
+        mutableAttrString.append(NSAttributedString(string: emoji))
+        DispatchQueue.main.async {
+            self.viewModel.content = mutableAttrString
+        }
     }
+
+
+    private func autoSaveLetter() {
+        let letter = Letter(title: title, recipient: recipient, date: getCurrentDate(), category: selectedCategory, content: content.string)
+            FileManagerHelper.saveLetters([letter])
+        }
     
     private func saveLetter() {
-            let newLetter = Letter(title: title, recipient: recipient, date: getCurrentDate(), category: selectedCategory, content: content)
-            letters.append(newLetter) // ✅ Add to letters list
-            FileManagerHelper.saveLetters(letters) // ✅ Save to file
+        let plainText = content.string
+
+        let newLetter = Letter(title: title, recipient: recipient, date: getCurrentDate(), category: selectedCategory, content: plainText)
+        letters.append(newLetter)
+        FileManagerHelper.saveLetters(letters)
+    }
+
+    private func resetLetter() {
+            title = ""
+            recipient = ""
+            content = NSAttributedString(string: "")
+            selectedCategory = ""
         }
 
-    
-    // MARK: - Get Current Date
+    private func loadLastSavedLetter() {
+            if let savedLetter = FileManagerHelper.loadLetters().last {
+                title = savedLetter.title
+                recipient = savedLetter.recipient
+                content = NSAttributedString(string: savedLetter.content)
+                selectedCategory = savedLetter.category
+            }
+        }
+
+
     private func getCurrentDate() -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter.string(from: Date())
     }
 
-    
-    // MARK: - Reset Letter (Ensures New Letter Starts Blank)
-    private func resetLetter() {
-        title = ""
-        recipient = ""
-        content = ""
-        selectedCategory = ""
-    }
-    
-    private func loadLastSavedLetter() {
-        if let savedLetter = FileManagerHelper.loadLetters().last {
-            title = savedLetter.title
-            recipient = savedLetter.recipient
-            content = savedLetter.content
-            selectedCategory = savedLetter.category
-        }
-    }
-    
-    
-    // MARK: - Category Selector (FIXED BINDING)
     @ViewBuilder
     private func categorySelector() -> some View {
         VStack(alignment: .leading) {
             Text("Category")
                 .font(.caption)
                 .foregroundColor(.gray)
-            
+
             Menu {
                 ForEach(categories, id: \.self) { category in
                     Button(category) {
@@ -585,11 +243,11 @@ struct NewLetterView: View {
                 .padding()
                 .background(Color.white.opacity(0.3).cornerRadius(10))
             }
-            
+
             if isCreatingNewCategory {
                 floatingInputField(title: "New Category", text: $selectedCategory)
                     .onSubmit {
-                        saveCategory() // ✅ Save new category to UserDefaults
+                        saveCategory()
                     }
             }
         }
@@ -598,170 +256,64 @@ struct NewLetterView: View {
     
     private func saveCategory() {
         let trimmedCategory = selectedCategory.trimmingCharacters(in: .whitespacesAndNewlines)
-        
-        // ✅ Prevent Duplicate Categories (Case-Insensitive)
         if !categories.contains(where: { $0.lowercased() == trimmedCategory.lowercased() }) {
             categories.append(trimmedCategory)
-            CategoryManager.saveCategories(categories) // ✅ Save to UserDefaults
+            CategoryManager.saveCategories(categories)
         }
     }
 }
 
-// MARK: - Auto Expanding Full-Screen Text Editor (FIXED BG)
-struct AutoExpandingTextEditor: View {
-    @Binding var text: String
-    @State private var textHeight: CGFloat = 300
-    
+
+struct CategoryManager {
+    private static let key = "categories"
+
+    static func saveCategories(_ categories: [String]) {
+        UserDefaults.standard.set(categories, forKey: key)
+    }
+
+    static func loadCategories() -> [String] {
+        return UserDefaults.standard.stringArray(forKey: key) ?? []
+    }
+}
+
+
+struct FontPicker: View {
+    @Binding var selectedFont: String
+
+    let allFonts = UIFont.familyNames.sorted()
+
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            if text.isEmpty {
-                Text("Write your letter here...")
-                    .foregroundColor(.gray)
-                    .padding(.leading, 15)
-                    .padding(.top, 12)
+        NavigationView {
+            List(allFonts, id: \.self) { font in
+                Button(action: { selectedFont = font }) {
+                    Text(font)
+                        .font(.custom(font, size: 18))
+                        .foregroundColor(.primary)
+                }
             }
-            
-            TextEditor(text: $text)
-                .frame(minHeight: textHeight, maxHeight: .infinity) // Auto-expand
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(Color.white.opacity(0.95)) // ✅ FIXED: No Extra White BG
-                        .shadow(color: Color.gray.opacity(0.2), radius: 5)
-                )
-                .foregroundColor(.primary)
-                .font(.system(size: 18))
-                .onChange(of: text) { _ in adjustHeight() }
+            .navigationTitle("Select Font")
         }
-        .frame(maxWidth: UIScreen.main.bounds.width - 40) // Full width with margins
-    }
-    
-    private func adjustHeight() {
-        let minHeight: CGFloat = 300
-        let maxHeight: CGFloat = UIScreen.main.bounds.height * 0.85 // Allow full-screen writing
-        let estimatedHeight = CGFloat(text.split(separator: "\n").count) * 22 + 60
-        textHeight = max(minHeight, min(estimatedHeight, maxHeight))
     }
 }
 
-    struct CategoryManager {
-        private static let key = "categories"
 
-        static func saveCategories(_ categories: [String]) {
-            UserDefaults.standard.set(categories, forKey: key)
-        }
+@ViewBuilder
+private func floatingInputField(title: String, text: Binding<String>) -> some View {
+    VStack(alignment: .leading) {
+        Text(title)
+            .font(.caption)
+            .foregroundColor(.gray)
 
-        static func loadCategories() -> [String] {
-            return UserDefaults.standard.stringArray(forKey: key) ?? []
-        }
+        TextField("", text: text)
+            .padding(.vertical, 10)
+            .foregroundColor(.primary)
+            .background(Color.clear)
+            .overlay(Rectangle().frame(height: 1).foregroundColor(.gray).opacity(0.7), alignment: .bottom)
     }
+    .padding(.horizontal)
+}
 
-    
-    // MARK: - Floating Label Input Field (PLACEMENT FIXED)
-    @ViewBuilder
-    private func floatingInputField(title: String, text: Binding<String>) -> some View {
-        VStack(alignment: .leading) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.gray)
-                .offset(y: text.wrappedValue.isEmpty ? 25 : 0)
-                .scaleEffect(text.wrappedValue.isEmpty ? 1.2 : 1, anchor: .leading)
-                .animation(.easeInOut(duration: 0.2), value: text.wrappedValue)
-            
-            TextField("", text: text)
-                .padding(.vertical, 10)
-                .foregroundColor(.primary)
-                .background(Color.clear)
-                .overlay(
-                    Rectangle()
-                        .frame(height: 1)
-                        .foregroundColor(.gray)
-                        .opacity(0.7),
-                    alignment: .bottom
-                )
-        }
-        .padding(.horizontal)
-    }
-    
-        
-    // MARK: - Formatting Menu
-    struct FormattingMenu: View {
-        @State private var selectedFont = "System"
-        @State private var fontSize: Double = 16
-        @State private var textColor: Color = .black
-        @State private var bgColor: Color = .white
-        
-        let allFonts = UIFont.familyNames.sorted()
-        
-        var body: some View {
-            VStack(spacing: 20) {
-                Text("Text Formatting")
-                    .font(.headline)
-                
-                VStack(alignment: .leading) {
-                    Text("Font Face")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                    
-                    Menu {
-                        ForEach(allFonts, id: \.self) { font in
-                            Button(font) {
-                                selectedFont = font
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Text(selectedFont)
-                                .foregroundColor(.primary)
-                            Spacer()
-                            Image(systemName: "chevron.down")
-                                .foregroundColor(.gray)
-                        }
-                        .padding()
-                        .background(Color.white.opacity(0.1).cornerRadius(10))
-                    }
-                }
-                .padding(.horizontal)
-                
-                
-                HStack {
-                    Text("Font Size")
-                    Slider(value: $fontSize, in: 12...36, step: 1)
-                    Text("\(Int(fontSize))")
-                }
-                .padding()
-                
-                HStack {
-                    Text("Text Color")
-                    ColorPicker("", selection: $textColor)
-                }
-                .padding()
-                
-                HStack {
-                    Text("Background Color")
-                    ColorPicker("", selection: $bgColor)
-                }
-                .padding()
-                
-                Button("Apply") {
-                    // Apply formatting changes
-                }
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-                
-                Spacer()
-            }
-            .padding()
-        }
-    }
-    
-    
-    
-    // MARK: - Blur View for Floating Toolbar
-    struct BlurView: UIViewRepresentable {
+struct BlurView: UIViewRepresentable {
         let style: UIBlurEffect.Style
         
         func makeUIView(context: Context) -> UIVisualEffectView {
@@ -771,35 +323,195 @@ struct AutoExpandingTextEditor: View {
         
         func updateUIView(_ uiView: UIVisualEffectView, context: Context) {}
     }
+
+// MARK: - Template Picker (FIXED UI)
+struct TemplatePicker: View {
+    @Environment(\.dismiss) private var dismiss
     
-    // MARK: - Template Picker (FIXED UI)
-    struct TemplatePicker: View {
-        var body: some View {
-            VStack(spacing: 20) {
-                Text("Select a Template")
-                    .font(.headline)
-                
-                List {
-                    Text("Formal Letter")
-                    Text("Casual Letter")
-                    Text("Apology Letter")
-                    Text("Thank You Letter")
-                    Text("Business Proposal")
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Select a Template")
+                .font(.headline)
+
+            List {
+                Text("Formal Letter")
+                Text("Casual Letter")
+                Text("Apology Letter")
+                Text("Thank You Letter")
+                Text("Business Proposal")
+            }
+
+            Button("Close") {dismiss()}
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.red)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            
+
+            Spacer()
+        }
+        .padding()
+    }
+}
+
+// MARK: - Formatting Menu
+struct FormattingMenu: View {
+    @Binding var isBold: Bool
+    @Binding var isItalic: Bool
+    @Binding var isUnderlined: Bool
+    @Binding var selectedFont: String
+    @Binding var fontSize: Double
+    @Binding var textColor: Color
+    @Binding var bgColor: Color
+    @Environment(\.dismiss) private var dismiss
+    
+    let allFonts = UIFont.familyNames.sorted()
+
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Text Formatting")
+                .font(.headline)
+            
+            HStack(spacing: 20) {
+                Button(action: { isBold.toggle() }) {
+                        Image(systemName: "bold")
+                            .font(.title2)
+                            .foregroundColor(isBold ? .blue : .gray)
+                    }
+
+                    Button(action: { isItalic.toggle() }) {
+                        Image(systemName: "italic")
+                            .font(.title2)
+                            .foregroundColor(isItalic ? .blue : .gray)
+                    }
+
+                    Button(action: { isUnderlined.toggle() }) {
+                        Image(systemName: "underline")
+                            .font(.title2)
+                            .foregroundColor(isUnderlined ? .blue : .gray)
+                    }
                 }
+                .padding()
+            
+            VStack(alignment: .leading) {
+                Text("Font Face")
+                    .font(.caption)
+                    .foregroundColor(.gray)
                 
-                Button("Close") {}
+                Menu {
+                    ForEach(allFonts, id: \.self) { font in
+                        Button(font) {
+                            selectedFont = font
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Text(selectedFont)
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(.gray)
+                    }
                     .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.red)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                
-                Spacer()
+                    .background(Color.white.opacity(0.1).cornerRadius(10))
+                }
+            }
+            .padding(.horizontal)
+            
+            
+            HStack {
+                Text("Font Size")
+                Slider(value: $fontSize, in: 12...36, step: 1)
+                Text("\(Int(fontSize))")
             }
             .padding()
+            
+            HStack {
+                Text("Text Color")
+                ColorPicker("", selection: $textColor)
+            }
+            .padding()
+            
+            HStack {
+                Text("Background Color")
+                ColorPicker("", selection: $bgColor)
+            }
+            .padding()
+            
+            Button("Apply") {
+                dismiss()
+            }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .cornerRadius(10)
+            
+            Spacer()
+        }
+        .padding()
+    }
+}
+
+struct EmojiPickerView: View {
+    let allEmojis = fetchAllEmojis()  // Fetch all iOS emojis
+    var onEmojiSelected: (String) -> Void
+    
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 8), spacing: 10) {
+                    ForEach(allEmojis, id: \.self) { emoji in
+                        Button(action: {
+                            onEmojiSelected(emoji)
+                            dismiss()
+                        }) {
+                            Text(emoji)
+                                .font(.largeTitle)
+                                .frame(width: 40, height: 40)
+                                .background(Color.white)
+                                .clipShape(Circle())
+                                .shadow(radius: 2)
+                        }
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("Select Emoji")
+            .navigationBarItems(trailing: Button("Close") { dismiss() })
         }
     }
+}
 
-#Preview {
+
+func fetchAllEmojis() -> [String] {
+    let emojiRanges: [(Int, Int)] = [
+        (0x1F600, 0x1F64F), // Emoticons 😀😃😄😁
+        (0x1F300, 0x1F5FF), // Misc Symbols and Pictographs 🌍🌎🌏
+        (0x1F680, 0x1F6FF), // Transport and Map Symbols 🚗🚕🚙
+        (0x2600, 0x26FF),   // Miscellaneous Symbols ☀️☁️☂️
+        (0x2700, 0x27BF),   // Dingbats ✂️✉️☎️
+        (0xFE00, 0xFE0F),   // Variation Selectors
+        (0x1F900, 0x1F9FF)  // Supplemental Symbols and Pictographs 🤩🤯🥳
+    ]
+
+    var emojis: [String] = []
+
+    for range in emojiRanges {
+        for unicode in range.0...range.1 {
+            if let scalar = UnicodeScalar(unicode) {
+                emojis.append(String(scalar))
+            }
+        }
+    }
+    return emojis
+}
+
+
+#Preview{
     NewLetterView(letters: .constant([]))
+    
 }

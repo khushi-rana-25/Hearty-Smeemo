@@ -1,9 +1,3 @@
-//
-//  File.swift
-//  Smeemo
-//
-//  Created by Khushi Rana on 21/02/25.
-//
 
 import UIKit
 import SwiftUI

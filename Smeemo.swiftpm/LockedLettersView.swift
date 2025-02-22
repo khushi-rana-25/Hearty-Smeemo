@@ -1,16 +1,10 @@
-//
-//  SwiftUIView.swift
-//  Smeemo
-//
-//  Created by Khushi Rana on 20/02/25.
-//
 
 import SwiftUI
 
 struct LockedLettersView: View {
     @State private var isUnlocked = false
     @State private var enteredPin = ""
-    let correctPin = "1234" // ✅ Change this later
+    let correctPin = "1234" 
 
     @Binding var letters: [Letter]
 
@@ -48,7 +42,7 @@ struct LockedLettersView: View {
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Color.purple)
                             .cornerRadius(10)
                             .padding()
                     }

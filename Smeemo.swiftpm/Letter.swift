@@ -8,7 +8,7 @@
 import Foundation
 
 // Letter Data Model
-struct Letter: Identifiable, Codable { // ✅ Added Codable for JSON support
+struct Letter: Identifiable, Codable { // Added Codable for JSON support
     let id: UUID
     let title: String
     let recipient: String

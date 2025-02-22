@@ -45,6 +45,6 @@ struct DocumentPreviewController: UIViewControllerRepresentable {
 import Foundation
 
 struct IdentifiableURL: Identifiable {
-    let id = UUID() // Required for Identifiable
+    let id = UUID() 
     let url: URL
 }
