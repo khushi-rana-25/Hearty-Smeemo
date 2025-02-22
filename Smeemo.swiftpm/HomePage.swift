@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct HomePage: View {
-    @State private var letters: [Letter] = FileManagerHelper.loadLetters()
+    @State private var letters: [Letter] = FileManagerHelper.loadLetters(){
+        didSet {
+            FileManagerHelper.saveLetters(letters)
+        }
+    }
     
     var body: some View {
         TabView {

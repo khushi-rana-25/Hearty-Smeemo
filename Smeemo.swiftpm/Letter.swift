@@ -14,14 +14,16 @@ struct Letter: Identifiable, Codable { // ✅ Added Codable for JSON support
     let recipient: String
     let date: String
     let category: String
+    let content: String
     var isLocked: Bool
 
-    init(title: String, recipient: String, date: String, category: String, isLocked: Bool = false) {
+    init(title: String, recipient: String, date: String, category: String, content: String, isLocked: Bool = false) {
         self.id = UUID()
         self.title = title
         self.recipient = recipient
         self.date = date
         self.category = category
+        self.content = content
         self.isLocked = isLocked
     }
 }
